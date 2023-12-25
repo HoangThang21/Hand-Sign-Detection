@@ -23,7 +23,7 @@ while True: # vòng lập vô tận lấý data từ cam
         imgWhite = np.ones((imgSize, imgSize, 3), np.uint8) * 255 # tạo mãng 3 chiều numby kích thước imageSize x imageSize x 3, uint 8 bit ==> tạo ra ảnh màu trắng mỗi kênh màu tối đa là 255
         imgCrop = img[y - offset:y + h + offset, x - offset:x + w + offset] # cắt phần frame theo boudinng box với khoảng lề là offset
 
-        imgCropShape = imgCrop.shape # trả thog6 tin về kích thước hình ảnh cắt (h, w, số kênh màuz)
+        imgCropShape = imgCrop.shape # trả thoông tin về kích thước hình ảnh cắt (h, w, số kênh màuz)
 
         aspectRatio = h / w # tỉ lệ chiều cao và chiều rộng của boudinng box
 
@@ -31,10 +31,10 @@ while True: # vòng lập vô tận lấý data từ cam
             k = imgSize / h #tính tóann tĩ lệ k để chỉnh chiều rộng.
             wCal = math.ceil(k * w) #làm tròn tích k với w
             if imgCropShape[0] > 0 and imgCropShape[1] > 0:
-                imgResize = cv2.resize(imgCrop, (wCal, imgSize))
+                imgResize = cv2.resize(imgCrop, (wCal, imgSize)) # thay đổi kích thước ảnh đã cắt
                 imgResizeShape = imgResize.shape # trả về thông tin kích thước về (wcal, imgSize)
                 wGap = math.ceil((imgSize - wCal) / 2)
-                imgWhite[:, wGap:wCal + wGap] = imgResize
+                imgWhite[:, wGap:wCal + wGap] = imgResize # gán ảnh vào vùng tương ứng của anh trắng
 
         else: # h < w
             k = imgSize / w # tính k để xác định tỉn lệ cần thiết để resize thành imageSize (kích thước yêu cầu).

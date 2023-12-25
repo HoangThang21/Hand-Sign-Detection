@@ -7,12 +7,12 @@ import math
 
 cap = cv2.VideoCapture(0)
 detector = HandDetector(maxHands=1)
-classifier = Classifier("Model/keras_model.h5", "Model/labels.txt")
+classifier = Classifier("Model2/keras_model.h5", "Model2/labels.txt")
 
 offset = 20
 imgSize = 300
 
-folder = "Data/C"
+# folder = "Data/C"
 counter = 0
 
 labels = ["A", "B", "C"]
@@ -35,21 +35,25 @@ while True:
         if aspectRatio > 1:
             k = imgSize / h
             wCal = math.ceil(k * w)
-            imgResize = cv2.resize(imgCrop, (wCal, imgSize))
-            imgResizeShape = imgResize.shape
-            wGap = math.ceil((imgSize - wCal) / 2)
-            imgWhite[:, wGap:wCal + wGap] = imgResize
-            prediction, index = classifier.getPrediction(imgWhite, draw=False)
-            print(prediction, index)
+            if wCal > 0:
+                imgResize = cv2.resize(imgCrop, (wCal, imgSize))
+                if not imgResize.size == 0:
+                    imgResizeShape = imgResize.shape
+                    wGap = math.ceil((imgSize - wCal) / 2)
+                    imgWhite[:, wGap:wCal + wGap] = imgResize
+                    prediction, index = classifier.getPrediction(imgWhite, draw=False)
+                    print(prediction, index)
 
         else:
             k = imgSize / w
             hCal = math.ceil(k * h)
-            imgResize = cv2.resize(imgCrop, (imgSize, hCal))
-            imgResizeShape = imgResize.shape
-            hGap = math.ceil((imgSize - hCal) / 2)
-            imgWhite[hGap:hCal + hGap, :] = imgResize
-            prediction, index = classifier.getPrediction(imgWhite, draw=False)
+            if hCal > 0:
+                imgResize = cv2.resize(imgCrop, (imgSize, hCal))
+                if not imgResize is None and imgResize.size > 0: 
+                    imgResizeShape = imgResize.shape
+                    hGap = math.ceil((imgSize - hCal) / 2)
+                    imgWhite[hGap:hCal + hGap, :] = imgResize
+                    prediction, index = classifier.getPrediction(imgWhite, draw=False)
 
         cv2.rectangle(imgOutput, (x - offset, y - offset-50),
                       (x - offset+90, y - offset-50+50), (255, 0, 255), cv2.FILLED)

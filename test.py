@@ -7,7 +7,7 @@ import math
 
 cap = cv2.VideoCapture(0)
 detector = HandDetector(maxHands=1)
-classifier = Classifier("Model2/keras_model.h5", "Model2/labels.txt")
+classifier = Classifier("Model/keras_model.h5", "Model/labels.txt")
 
 offset = 20
 imgSize = 300
@@ -21,7 +21,7 @@ while True:
     success, img = cap.read()
     imgOutput = img.copy()
     hands, img = detector.findHands(img)
-    confidence_threshold =0.85
+    confidence_threshold = 0.85
     if hands:
         hand = hands[0]
         x, y, w, h = hand['bbox']
@@ -42,19 +42,21 @@ while True:
                     imgResizeShape = imgResize.shape
                     wGap = math.ceil((imgSize - wCal) / 2)
                     imgWhite[:, wGap:wCal + wGap] = imgResize
-                    prediction, index = classifier.getPrediction(imgWhite, draw=False)
-                    print("hinh ok",prediction, index)
+                    prediction, index = classifier.getPrediction(
+                        imgWhite, draw=False)
+                    print("hinh ok", prediction, index)
         else:
             k = imgSize / w
             hCal = math.ceil(k * h)
             if hCal > 0:
                 imgResize = cv2.resize(imgCrop, (imgSize, hCal))
-                if not imgResize is None and imgResize.size > 0: 
+                if not imgResize is None and imgResize.size > 0:
                     imgResizeShape = imgResize.shape
                     hGap = math.ceil((imgSize - hCal) / 2)
                     imgWhite[hGap:hCal + hGap, :] = imgResize
-                    prediction, index = classifier.getPrediction(imgWhite, draw=False)
-                    print('vo',index)
+                    prediction, index = classifier.getPrediction(
+                        imgWhite, draw=False)
+                    print('vo', index)
 
         if prediction[index] >= confidence_threshold:
             label = labels[index]

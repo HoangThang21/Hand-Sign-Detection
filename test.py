@@ -21,6 +21,7 @@ while True:
     success, img = cap.read()
     imgOutput = img.copy()
     hands, img = detector.findHands(img)
+    confidence_threshold =0.85
     if hands:
         hand = hands[0]
         x, y, w, h = hand['bbox']
@@ -55,14 +56,19 @@ while True:
                     prediction, index = classifier.getPrediction(imgWhite, draw=False)
                     print('vo',index)
 
+        if prediction[index] >= confidence_threshold:
+            label = labels[index]
+        else:
+            label = 'Unknown'
+
         cv2.rectangle(imgOutput, (x - offset, y - offset-50),
                       (x - offset+90, y - offset-50+50), (255, 0, 255), cv2.FILLED)
-        if prediction[0]<=0.0001 :
-            cv2.putText(imgOutput, 'none', (x, y - 26),
-                        cv2.FONT_HERSHEY_COMPLEX, 1.7, (255, 255, 255), 2)
-        else :
-            cv2.putText(imgOutput, labels[index], (x, y - 26),
-                        cv2.FONT_HERSHEY_COMPLEX, 1.7, (255, 255, 255), 2)
+        # if prediction[0]<=0.0001 :
+        #     cv2.putText(imgOutput, 'none', (x, y - 26),
+        #                 cv2.FONT_HERSHEY_COMPLEX, 1.7, (255, 255, 255), 2)
+        # else :
+        cv2.putText(imgOutput, label, (x, y - 26),
+                    cv2.FONT_HERSHEY_COMPLEX, 1.7, (255, 255, 255), 2)
         cv2.rectangle(imgOutput, (x-offset, y-offset),
                       (x + w+offset, y + h+offset), (255, 0, 255), 4)
 

@@ -5,39 +5,39 @@ import numpy as np
 import math
 import time
 
-cap = cv2.VideoCapture(0)
-detector = HandDetector(maxHands=3)
-offset = 20
-imgSize = 300
+cap = cv2.VideoCapture(0) # kết nói với cam mặt định
+detector = HandDetector(maxHands=3) # tối đa 1 bàn tay
+offset = 20 # khoãng cách giữa khung bà tay với hình cắt
+imgSize = 300 # kích thước img cuối
 
-folder = "./Data/C"
-counter = 0
+folder = "./Data/C" # chọn folder 
+counter = 0 # đếm sl ảnh chụp
 
-while True:
-    success, img = cap.read()
-    hands, img = detector.findHands(img)
-    if hands:
-        hand = hands[0]
-        x, y, w, h = hand['bbox']
+while True: # vòng lập vô tận lấý data từ cam
+    success, img = cap.read() # Success kiểu boolean đọc có thành công không, img là frame hình hảnh từ cam | sucess = true --> img là 1 numby
+    hands, img = detector.findHands(img) # tìm bàn tay trong frame
+    if hands: 
+        hand = hands[0] # lấy thông tin về bà tay đầu trong frame
+        x, y, w, h = hand['bbox'] # trả về khung chứa bàn tay.
+ 
+        imgWhite = np.ones((imgSize, imgSize, 3), np.uint8) * 255 # tạo mãng 3 chiều numby kích thước imageSize x imageSize x 3, uint 8 bit ==> tạo ra ảnh màu trắng mỗi kênh màu tối đa là 255
+        imgCrop = img[y - offset:y + h + offset, x - offset:x + w + offset] # cắt phần frame theo boudinng box với khoảng lề là offset
 
-        imgWhite = np.ones((imgSize, imgSize, 3), np.uint8) * 255
-        imgCrop = img[y - offset:y + h + offset, x - offset:x + w + offset]
+        imgCropShape = imgCrop.shape # trả thog6 tin về kích thước hình ảnh cắt (h, w, số kênh màuz)
 
-        imgCropShape = imgCrop.shape
+        aspectRatio = h / w # tỉ lệ chiều cao và chiều rộng của boudinng box
 
-        aspectRatio = h / w
-
-        if aspectRatio > 1:
-            k = imgSize / h
-            wCal = math.ceil(k * w)
+        if aspectRatio > 1: # kiểm tra tỉ lệ khunng hình  nếu h > w
+            k = imgSize / h #tính tóann tĩ lệ k để chỉnh chiều rộng.
+            wCal = math.ceil(k * w) #làm tròn tích k với w
             if imgCropShape[0] > 0 and imgCropShape[1] > 0:
                 imgResize = cv2.resize(imgCrop, (wCal, imgSize))
-                imgResizeShape = imgResize.shape
+                imgResizeShape = imgResize.shape # trả về thông tin kích thước về (wcal, imgSize)
                 wGap = math.ceil((imgSize - wCal) / 2)
                 imgWhite[:, wGap:wCal + wGap] = imgResize
 
-        else:
-            k = imgSize / w
+        else: # h < w
+            k = imgSize / w # tính k để xác định tỉn lệ cần thiết để resize thành imageSize (kích thước yêu cầu).
             hCal = math.ceil(k * h)
             if imgCropShape[0] > 0 and imgCropShape[1] > 0:
                 imgResize = cv2.resize(imgCrop, (imgSize, hCal))

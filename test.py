@@ -43,7 +43,6 @@ while True:
                     imgWhite[:, wGap:wCal + wGap] = imgResize
                     prediction, index = classifier.getPrediction(imgWhite, draw=False)
                     print("hinh ok",prediction, index)
-
         else:
             k = imgSize / w
             hCal = math.ceil(k * h)
